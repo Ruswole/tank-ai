@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Design system and UI primitives
+- Editor workspace chrome
 
 ## Current Goal
 
-- Keep the dark shadcn/ui foundation ready for feature-level UI work.
+- Keep the editor chrome ready for canvas and AI workspace surfaces.
 
 ## Completed
 
@@ -19,6 +19,10 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added `lucide-react` and supporting class utility dependencies.
 - Mapped shadcn semantic tokens to the existing dark workspace palette.
 - Validated with TypeScript, ESLint, and a production build.
+- Added the reusable editor navbar with sidebar state controls.
+- Added the floating project sidebar with Shared and My Projects tabs, empty states, and New Project action.
+- Wired the editor shell and `/editor` page to the sidebar toggle interaction.
+- Added a separate Tank AI home page at `/` with a link to the editor.
 
 ## In Progress
 
@@ -26,7 +30,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Define the first feature-level workspace surface using the primitives.
+- Add the collaborative canvas surface.
 
 ## Open Questions
 
@@ -39,3 +43,4 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Session Notes
 
 - Generated files under `components/ui/` were left unmodified after shadcn installation.
+- Editor chrome will use a client shell for sidebar state while keeping reusable presentational components focused.
