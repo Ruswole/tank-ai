@@ -28,6 +28,11 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added default route protection through root `proxy.ts`, with env-configured auth paths public.
 - Updated `/` to redirect authenticated users to `/editor` and unauthenticated users to `/sign-in`.
 - Added Clerk's built-in `UserButton` to the editor navbar.
+- Updated the auth shell to use an equal 50/50 layout with a tinted left panel.
+- Applied the Geist Sans font variables to Clerk's hosted authentication UI.
+- Allowed the home route through Clerk middleware so local auth pages are rendered instead of the hosted account flow.
+- Adjusted the auth split breakpoint and column sizing for medium desktop viewports without horizontal overflow.
+- Refined the auth panel content and accent treatment to match the approved reference composition.
 
 ## In Progress
 

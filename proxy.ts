@@ -1,6 +1,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
 const publicRoutes = [
+  "/",
   process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "/sign-in",
   process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? "/sign-up",
 ];

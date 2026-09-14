@@ -43,6 +43,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               colorNeutral: "var(--text-secondary)",
               colorDanger: "var(--state-error)",
               colorSuccess: "var(--state-success)",
+              fontFamily: "var(--font-geist-sans)",
+              fontFamilyButtons: "var(--font-geist-sans)",
               borderRadius: "0.75rem",
             },
           }}
