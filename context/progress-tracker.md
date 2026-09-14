@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor workspace chrome
+- Authentication
 
 ## Current Goal
 
-- Keep the editor chrome ready for canvas and AI workspace surfaces.
+- Provide Clerk sign-in, sign-up, route protection, and authenticated editor access.
 
 ## Completed
 
@@ -23,6 +23,11 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added the floating project sidebar with Shared and My Projects tabs, empty states, and New Project action.
 - Wired the editor shell and `/editor` page to the sidebar toggle interaction.
 - Added a separate Tank AI home page at `/` with a link to the editor.
+- Added Clerk provider theming with the existing dark CSS variables.
+- Added responsive sign-in and sign-up pages using Clerk's built-in components.
+- Added default route protection through root `proxy.ts`, with env-configured auth paths public.
+- Updated `/` to redirect authenticated users to `/editor` and unauthenticated users to `/sign-in`.
+- Added Clerk's built-in `UserButton` to the editor navbar.
 
 ## In Progress
 
@@ -35,6 +40,8 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Open Questions
 
 - Add unresolved product or implementation questions here.
+- Clerk environment variables must be provided by the local environment for runtime auth.
+- Sign-in and sign-up URL variables are optional; the proxy defaults to `/sign-in` and `/sign-up` when they are absent.
 
 ## Architecture Decisions
 
@@ -44,3 +51,4 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - Generated files under `components/ui/` were left unmodified after shadcn installation.
 - Editor chrome will use a client shell for sidebar state while keeping reusable presentational components focused.
+- Clerk owns authentication flows, profile settings, and logout; application code only configures the provider, routes, and appearance.
