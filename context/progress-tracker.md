@@ -52,3 +52,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Generated files under `components/ui/` were left unmodified after shadcn installation.
 - Editor chrome will use a client shell for sidebar state while keeping reusable presentational components focused.
 - Clerk owns authentication flows, profile settings, and logout; application code only configures the provider, routes, and appearance.
+- Auth pages use the Tank AI two-panel brand layout on large screens and show only the centered Clerk form on small screens.
