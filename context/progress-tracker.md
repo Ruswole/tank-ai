@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Authentication
+- Feature 05(TBD)
 
 ## Current Goal
 
-- Provide Clerk sign-in, sign-up, route protection, and authenticated editor access.
+- To be determined for Feature 05.
 
 ## Completed
 
@@ -36,11 +36,13 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- None.
+- Editor home layout and project dialog flow for create, rename, and delete actions.
+- Added live slug preview beneath the project name input in the create dialog so the generated URL-style name updates as the user types.
+- Refined the project sidebar to match the reference layout with first-positioned My Projects tabs, flatter rows, and quieter hover actions.
 
 ## Next Up
 
-- Add the collaborative canvas surface.
+- Feature 05 (TBD)
 
 ## Open Questions
 
