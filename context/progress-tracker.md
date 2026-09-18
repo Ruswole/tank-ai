@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Project dialogs (create, rename, and delete)
+- Editor home wiring
 
 ## Current Goal
 
-- Complete the project dialog flow for creating, renaming, and deleting projects.
+- Wire the editor home sidebar and project dialogs to the real authenticated project API while keeping initial project data server-fetched.
 
 ## Completed
 
@@ -37,16 +37,19 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added the Prisma project and collaborator models with ownership, cascade deletion, uniqueness, and query indexes.
 - Added the server-only cached Prisma client singleton with direct PostgreSQL and Accelerate URL branches.
 - Created and applied the initial Prisma migration and regenerated the Prisma client successfully.
+- Added authenticated `GET` and `POST` project API routes for listing and creating the current user's projects.
+- Added owner-only `PATCH` and `DELETE` project API routes with explicit `401`, `403`, `404`, and `400` responses.
+- Wired the editor home page to server-side project fetching and passed the initial owned/shared project lists into the client shell.
+- Wired the project sidebar and dialog flow to actual create, rename, and delete API calls with redirect/refresh behavior for active workspace deletions.
+- Validated the editor-home project flow with a successful production build.
 
 ## In Progress
 
-- Editor home layout and project dialog flow for create, rename, and delete actions.
-- Added live slug preview beneath the project name input in the create dialog so the generated URL-style name updates as the user types.
-- Refined the project sidebar to match the reference layout with first-positioned My Projects tabs, flatter rows, and quieter hover actions.
+- No open implementation blockers for this feature.
 
 ## Next Up
 
-- Validate the project dialog interactions and connect their actions to persistence.
+- Monitor the project workspace flow for follow-on editor features and route-level validation beyond the current project API integration.
 
 ## Open Questions
 
@@ -66,3 +69,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Clerk owns authentication flows, profile settings, and logout; application code only configures the provider, routes, and appearance.
 - Auth pages use the Tank AI two-panel brand layout on large screens and show only the centered Clerk form on small screens.
 - Prisma uses `@prisma/adapter-pg` for direct PostgreSQL URLs and `@prisma/extension-accelerate` only for `prisma+postgres://` URLs; database credentials remain server-only.
+- The exported Prisma singleton exposes the shared project delegate type so direct and Accelerate clients remain callable by API routes.
