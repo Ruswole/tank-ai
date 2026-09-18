@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectDialogContent } from "@/components/editor/project-dialogs";
@@ -10,29 +11,7 @@ import {
   type ProjectSidebarItem,
 } from "@/components/editor/project-sidebar";
 import { Button } from "@/components/ui/button";
-import { useProjectDialogs } from "@/components/editor/use-project-dialogs";
-
-const initialProjects: ProjectSidebarItem[] = [
-  { id: "project-1", name: "API Gateway", owner: "owned", slug: "api-gateway" },
-  {
-    id: "project-2",
-    name: "Analytics Stack",
-    owner: "owned",
-    slug: "analytics-stack",
-  },
-  {
-    id: "project-3",
-    name: "Payments Platform",
-    owner: "shared",
-    slug: "payments-platform",
-  },
-  {
-    id: "project-4",
-    name: "Infrastructure Review",
-    owner: "shared",
-    slug: "infrastructure-review",
-  },
-];
+import { useProjectDialogs } from "@/hooks/use-project-dialogs";
 
 function slugify(value: string) {
   return value
@@ -43,10 +22,55 @@ function slugify(value: string) {
     .slice(0, 60);
 }
 
-export function EditorShell() {
+function buildProjectSlug(
+  value: string,
+  projects: ProjectSidebarItem[],
+  currentId?: string,
+) {
+  const baseSlug = slugify(value);
+
+  if (!baseSlug) {
+    return "";
+  }
+
+  const generateSuffix = () =>
+    Math.random().toString(36).slice(2, 8).padEnd(5, "0");
+
+  let suffix = generateSuffix();
+  let candidate = `${baseSlug}-${suffix}`;
+  let attempt = 0;
+
+  while (
+    attempt < 10 &&
+    projects.some(
+      (project) =>
+        project.id !== currentId && slugify(project.name) === candidate,
+    )
+  ) {
+    suffix = generateSuffix();
+    candidate = `${baseSlug}-${suffix}`;
+    attempt += 1;
+  }
+
+  return candidate;
+}
+
+interface EditorShellProps {
+  initialProjects?: {
+    ownedProjects: ProjectSidebarItem[];
+    sharedProjects: ProjectSidebarItem[];
+  };
+}
+
+export function EditorShell({
+  initialProjects = { ownedProjects: [], sharedProjects: [] },
+}: EditorShellProps) {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [projects, setProjects] =
-    useState<ProjectSidebarItem[]>(initialProjects);
+  const [projects, setProjects] = useState<ProjectSidebarItem[]>([
+    ...initialProjects.ownedProjects,
+    ...initialProjects.sharedProjects,
+  ]);
   const {
     dialogType,
     targetProject,
@@ -60,25 +84,71 @@ export function EditorShell() {
     submit,
   } = useProjectDialogs();
 
-  const slugPreview = useMemo(() => slugify(draftName), [draftName]);
+  const slugPreview = useMemo(
+    () => buildProjectSlug(draftName, projects, targetProject?.id),
+    [draftName, projects, targetProject?.id],
+  );
+
+  const refreshProjectList = async () => {
+    const response = await fetch("/api/projects", { cache: "no-store" });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const payload = (await response.json()) as {
+      projects?: Array<{ id: string; name: string }>;
+    };
+    const nextProjects = (payload.projects ?? []).map((project) => ({
+      id: project.id,
+      name: project.name,
+      owner: "owned" as const,
+      slug: slugify(project.name),
+    }));
+
+    setProjects(nextProjects);
+  };
 
   const handleCreateProject = async () => {
     const trimmedName = draftName.trim();
-    const slug = slugify(trimmedName);
+    const slug = buildProjectSlug(trimmedName, projects);
 
     if (!trimmedName || !slug) {
       return;
     }
 
+    const response = await fetch("/api/projects", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: trimmedName }),
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const payload = (await response.json()) as {
+      project?: { id: string; name: string };
+    };
+    const project = payload.project;
+
+    if (!project) {
+      return;
+    }
+
     setProjects((currentProjects) => [
       {
-        id: `project-${Date.now()}`,
-        name: trimmedName,
+        id: project.id,
+        name: project.name,
         owner: "owned",
-        slug,
+        slug: slugify(project.name),
       },
       ...currentProjects,
     ]);
+
+    router.push(`/editor?project=${project.id}`);
   };
 
   const handleRenameProject = async () => {
@@ -87,23 +157,25 @@ export function EditorShell() {
     }
 
     const trimmedName = draftName.trim();
-    const slug = slugify(trimmedName);
+    const slug = buildProjectSlug(trimmedName, projects, targetProject.id);
 
     if (!trimmedName || !slug) {
       return;
     }
 
-    setProjects((currentProjects) =>
-      currentProjects.map((project) =>
-        project.id === targetProject.id
-          ? {
-              ...project,
-              name: trimmedName,
-              slug,
-            }
-          : project,
-      ),
-    );
+    const response = await fetch(`/api/projects/${targetProject.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: trimmedName }),
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    await refreshProjectList();
   };
 
   const handleDeleteProject = async () => {
@@ -111,9 +183,27 @@ export function EditorShell() {
       return;
     }
 
-    setProjects((currentProjects) =>
-      currentProjects.filter((project) => project.id !== targetProject.id),
+    const response = await fetch(`/api/projects/${targetProject.id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const nextProjects = projects.filter(
+      (project) => project.id !== targetProject.id,
     );
+    setProjects(nextProjects);
+
+    if (typeof window !== "undefined") {
+      const currentProjectId = new URLSearchParams(window.location.search).get(
+        "project",
+      );
+      if (currentProjectId === targetProject.id) {
+        router.push("/editor");
+      }
+    }
   };
 
   return (
@@ -137,8 +227,12 @@ export function EditorShell() {
         onClose={() => setIsSidebarOpen(false)}
         projects={projects}
         onCreateProject={openCreate}
-        onRenameProject={openRename}
-        onDeleteProject={openDelete}
+        onRenameProject={(project) =>
+          openRename({ ...project, slug: slugify(project.name) })
+        }
+        onDeleteProject={(project) =>
+          openDelete({ ...project, slug: slugify(project.name) })
+        }
       />
 
       <main className="min-h-screen pt-14">
