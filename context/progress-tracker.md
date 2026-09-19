@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor home wiring
+- Share and collaboration access implementation
 
 ## Current Goal
 
-- Wire the editor home sidebar and project dialogs to the real authenticated project API while keeping initial project data server-fetched.
+- Complete the `/editor/[roomId]` sharing workflow with server-side collaborator access checks and Clerk profile enrichment.
 
 ## Completed
 
@@ -42,6 +42,14 @@ Update this file whenever the current phase, active feature, or implementation s
 - Wired the editor home page to server-side project fetching and passed the initial owned/shared project lists into the client shell.
 - Wired the project sidebar and dialog flow to actual create, rename, and delete API calls with redirect/refresh behavior for active workspace deletions.
 - Validated the editor-home project flow with a successful production build.
+- Added server-side project access helpers for Clerk identity and owner/collaborator checks.
+- Added the `/editor/[roomId]` workspace shell with access denial, project context, sidebar highlighting, canvas placeholder, and AI sidebar placeholder.
+- Implemented the server-side `/editor/[roomId]` access gate with redirect, `AccessDenied`, and project lookup logic.
+- Added the reusable access-denied UX and confirmed the workspace layout matches the current feature spec.
+- Added the project collaborator API for membership listing, owner-only invitations, and owner-only removals.
+- Enriched collaborator records with Clerk display names and avatar images, with email fallback when no Clerk user matches.
+- Added the workspace Share dialog with owner management controls, collaborator read-only access, and temporary copy-link feedback.
+- Validated the share workflow with a successful production build.
 
 ## In Progress
 
@@ -49,7 +57,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Monitor the project workspace flow for follow-on editor features and route-level validation beyond the current project API integration.
+- Monitor the project workspace flow for follow-on editor features and route-level validation beyond the current project and sharing API integrations.
 
 ## Open Questions
 
@@ -70,3 +78,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Auth pages use the Tank AI two-panel brand layout on large screens and show only the centered Clerk form on small screens.
 - Prisma uses `@prisma/adapter-pg` for direct PostgreSQL URLs and `@prisma/extension-accelerate` only for `prisma+postgres://` URLs; database credentials remain server-only.
 - The exported Prisma singleton exposes the shared project delegate type so direct and Accelerate clients remain callable by API routes.
+- Collaborators remain email-only in Prisma; Clerk Backend API lookup is performed at collaborator-list read time for optional profile enrichment.
+- Collaborator mutations are protected by project ownership checks in the route handler; collaborator reads require project membership.
