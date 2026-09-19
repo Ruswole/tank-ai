@@ -20,7 +20,10 @@ const createPrismaClient = () => {
   return new PrismaClient({ adapter });
 };
 
-type PrismaClientInstance = Pick<PrismaClient, "project">;
+type PrismaClientInstance = Pick<
+  PrismaClient,
+  "project" | "projectCollaborator"
+>;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClientInstance | undefined;
