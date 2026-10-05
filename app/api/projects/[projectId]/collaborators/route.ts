@@ -70,7 +70,7 @@ async function enrichCollaborators(
     : (userResponse as { data: ClerkUser[] }).data;
   const usersByEmail = new Map(
     users.flatMap((user) =>
-      user.emailAddresses.map(
+      (user.emailAddresses ?? []).map(
         (address) => [address.emailAddress, user] as const,
       ),
     ),
@@ -97,7 +97,7 @@ async function enrichUser(userId: string) {
     await clerkClient()
   ).users.getUser(userId)) as unknown as ClerkUser;
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
-  const primaryEmail = user.emailAddresses[0]?.emailAddress ?? null;
+  const primaryEmail = user.emailAddresses?.[0]?.emailAddress ?? null;
 
   return {
     email: primaryEmail,

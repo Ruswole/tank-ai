@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Share and collaboration access implementation
+- Liveblocks realtime collaboration infrastructure
 
 ## Current Goal
 
-- Complete the `/editor/[roomId]` sharing workflow with server-side collaborator access checks and Clerk profile enrichment.
+- Provide the collaborative canvas foundation for project workspaces using Liveblocks-backed React Flow.
 
 ## Completed
 
@@ -50,6 +50,14 @@ Update this file whenever the current phase, active feature, or implementation s
 - Enriched collaborator records with Clerk display names and avatar images, with email fallback when no Clerk user matches.
 - Added the workspace Share dialog with owner management controls, collaborator read-only access, and temporary copy-link feedback.
 - Validated the share workflow with a successful production build.
+- Added typed Liveblocks presence and user metadata for cursors and thinking state.
+- Added a cached Liveblocks Node client with deterministic cursor colors.
+- Added the authenticated `/api/liveblocks-auth` route with project access checks, private room creation, and write session tokens.
+- Added the `@liveblocks/node` server dependency.
+- Added the shared canvas model with node and edge schema types in `types/canvas.ts`.
+- Added the collaborative canvas wrapper that sets up Liveblocks room auth, presence, and a React Flow surface using synchronized nodes and edges.
+- Replaced the placeholder workspace canvas with the live room-backed canvas.
+- Completed the base canvas foundation per the feature spec: room setup, Liveblocks-backed React Flow state, empty initial node/edge graphs, fitView, MiniMap, and dot-pattern background.
 
 ## In Progress
 
@@ -57,7 +65,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Monitor the project workspace flow for follow-on editor features and route-level validation beyond the current project and sharing API integrations.
+- Keep the collaborative canvas foundation stable and verify it through a production build.
 
 ## Open Questions
 
@@ -65,6 +73,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Clerk environment variables must be provided by the local environment for runtime auth.
 - Sign-in and sign-up URL variables are optional; the proxy defaults to `/sign-in` and `/sign-up` when they are absent.
 - `DATABASE_URL` must be provided by the local environment for Prisma runtime and migrations.
+- `LIVEBLOCKS_SECRET_KEY` must be provided by the local environment for room creation and token issuance.
 
 ## Architecture Decisions
 
@@ -80,3 +89,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - The exported Prisma singleton exposes the shared project delegate type so direct and Accelerate clients remain callable by API routes.
 - Collaborators remain email-only in Prisma; Clerk Backend API lookup is performed at collaborator-list read time for optional profile enrichment.
 - Collaborator mutations are protected by project ownership checks in the route handler; collaborator reads require project membership.
+- Liveblocks room IDs intentionally match project IDs, and rooms are private by default; authenticated project members receive write access.
